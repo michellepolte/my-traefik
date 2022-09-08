@@ -1,0 +1,12 @@
+networks:
+  my-net:
+    name: my-net
+
+services:
+  whoami:
+    image: docker.io/containous/whoami
+    container_name: whoami
+    labels:
+      - "traefik.enable=true"
+    networks:
+      - my-net

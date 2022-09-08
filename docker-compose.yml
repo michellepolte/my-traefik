@@ -1,0 +1,29 @@
+networks:
+  my-net:
+    name: my-net
+
+services:
+  proxy:
+    image: docker.io/library/traefik:latest
+    container_name: proxy
+    command:
+      - --api.dashboard=true
+      - --providers.docker
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.web.http.redirections.entrypoint.permanent=true
+      - --providers.docker.exposedByDefault=false
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      - "traefik.enable=true"
+    volumes:
+      - /var/run/podman/podman.sock:/var/run/docker.sock
+      - ${PWD}/traefik/dynamic:/etc/traefik/dynamic
+      - ${PWD}/certs:/etc/certs/
+    networks:
+      - my-net
